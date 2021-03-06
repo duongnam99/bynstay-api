@@ -1,35 +1,30 @@
 <?php
 
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\API\Admin;
 
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
 
 
-class BaseController extends Controller
+class AdminBaseController extends Controller
 {
     /**
      * success response method.
      *
      * @return \Illuminate\Http\Response
      */
-    public function sendResponse($result, $message = '', $isGetList = false)
+    public function sendResponse($result, $isGetList = 0)
     {
         if ($isGetList) {
             return response()->json($result, 200)
             ->header('Access-Control-Expose-Headers', 'X-Total-Count')
             ->header('X-Total-Count', $result->count());
         }
-  
-    	$response = [
-            'success' => true,
-            'data'    => $result,
-            'message' => $message,
-        ];
-
-        return response()->json($response, 200);
+        return response()->json($result, 200);
+        // ->header('Access-Control-Expose-Headers', 'X-Total-Count');
+        // ->header('X-Total-Count', $result->count());
     }
 
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
    
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\Client;
+use App\Models\Host;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -21,6 +23,7 @@ class RegisterController extends BaseController
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required',
+            'user_type' => 'int',
             'c_password' => 'required|same:password',
         ]);
    
@@ -33,10 +36,32 @@ class RegisterController extends BaseController
         $user = User::create($input);
         $success['token'] =  $user->createToken('bynstay')->plainTextToken;
         $success['name'] =  $user->name;
+
+
+        if ($request->has('user_type')) {
+            $success['user_type'] =  $user->user_type;
+            if ($request->user_type == User::CLIENT) {
+                $this->createSubEntity(new Client(), $user->id);
+            } elseif ($request->user_type == User::HOSTS) {
+                $this->createSubEntity(new Host(), $user->id);
+            }
+        } else {
+            $this->createSubEntity(new Client(), $user->id);
+        }
+
+        
    
         return $this->sendResponse($success, 'User register successfully.');
     }
-   
+
+    
+    private function createSubEntity($entity, $userId) 
+    {   
+        $entity->user_id = $userId;
+        $entity->save();
+    }
+
+
     /**
      * Login api
      *

@@ -34,6 +34,20 @@ services:
       MYSQL_ROOT_PASSWORD: secret
     ports:
         - "33061:3306"
+  # The Database manager
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - database
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: secret
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8183:80
 
 volumes:
   dbdata:
