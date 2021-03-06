@@ -3,10 +3,21 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\HomestayPolicyResource;
+use App\Repositories\HomestayPolicy\HomestayPolicyRepositoryInterface;
+use App\Validators\InputValidator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-class HomestayPolicyController extends Controller
+class HomestayPolicyController extends AdminBaseController
 {
+    protected $homestayPolicyRepo;
+
+    public function __construct(HomestayPolicyRepositoryInterface $homestayPolicyRepo)
+    {
+        $this->homestayPolicyRepo = $homestayPolicyRepo;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +25,8 @@ class HomestayPolicyController extends Controller
      */
     public function index()
     {
-        //
+        $data = $this->homestayPolicyRepo->getAll();
+        return $this->sendResponse(HomestayPolicyResource::collection($data), true);
     }
 
     /**
@@ -35,7 +47,15 @@ class HomestayPolicyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+        $validator = InputValidator::homestayPolicy($request);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+        $data = $this->homestayPolicyRepo->create($input);
+
+        return $this->sendResponse(new HomestayPolicyResource($data));
     }
 
     /**
@@ -46,7 +66,8 @@ class HomestayPolicyController extends Controller
      */
     public function show($id)
     {
-        //
+        $record = $this->homestayPolicyRepo->find($id);
+        return $this->sendResponse(new HomestayPolicyResource($record));
     }
 
     /**
@@ -69,7 +90,23 @@ class HomestayPolicyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = InputValidator::homestayPolicy($request);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+        $record = $this->homestayPolicyRepo->find($id);
+
+        if (is_null($record)) {
+            return $this->sendError('Record not found.');
+        }
+        $record = $this->homestayPolicyRepo->update($id, $request->all());
+
+        if($record === false) {
+            $$record = ["status" => false];
+        }
+
+        return $this->sendResponse(new HomestayPolicyResource($record));
     }
 
     /**
@@ -80,6 +117,8 @@ class HomestayPolicyController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $result = $this->homestayPolicyRepo->delete($id);
+        $response = ["status" => $result];
+        return $this->sendResponse(new HomestayPolicyResource($response));
     }
 }

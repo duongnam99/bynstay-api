@@ -1,22 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\API\Admin;
+namespace App\Http\Controllers\API\Common;
 
-use Illuminate\Http\Request;
-use App\Validators\InputValidator;
+use App\Http\Controllers\API\BaseController;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\HomestayPolicyTypeResource;
-use App\Repositories\HomestayPolicyType\HomestayPolicyTypeRepositoryInterface;
+use App\Http\Resources\HomestayUtilityResource;
+use App\Repositories\HomestayUtility\HomestayUtilityRepositoryInterface;
+use App\Validators\InputValidator;
+use Illuminate\Http\Request;
 
-class HomestayPolicyTypeController extends AdminBaseController
+class HSUtilityController extends BaseController
 {
-    protected $homestayPolicytypeRepo;
+    protected $homestayUtilityRepo;
 
-    public function __construct(HomestayPolicyTypeRepositoryInterface $homestayPolicytypeRepo)
+    public function __construct(
+        HomestayUtilityRepositoryInterface $homestayUtilityRepo,
+    )
     {
-        $this->homestayPolicytypeRepo = $homestayPolicytypeRepo;
+        $this->homestayUtilityRepo = $homestayUtilityRepo;
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -24,8 +26,8 @@ class HomestayPolicyTypeController extends AdminBaseController
      */
     public function index()
     {
-        $data = $this->homestayPolicytypeRepo->getAll();
-        return $this->sendResponse(HomestayPolicyTypeResource::collection($data), true);
+        $data = $this->homestayUtilityRepo->getAll();
+        return $this->sendResponse(HomestayUtilityResource::collection($data), true);
     }
 
     /**
@@ -35,38 +37,38 @@ class HomestayPolicyTypeController extends AdminBaseController
      */
     public function create()
     {
-
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
         $input = $request->all();
-        $validator = InputValidator::storeHomestayPolicyType($request);
+        $validator = InputValidator::homestayUtility($request);
 
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-        $data = $this->homestayPolicytypeRepo->create($input);
+        $data = $this->homestayUtilityRepo->create($input);
 
-        return $this->sendResponse(new HomestayPolicyTypeResource($data));
+        return $this->sendResponse(new HomestayUtilityResource($data));
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
-        $record = $this->homestayPolicytypeRepo->find($id);
-        return $this->sendResponse(new HomestayPolicyTypeResource($record));
+        $record = $this->homestayUtilityRepo->find($id);
+        return $this->sendResponse(new HomestayUtilityResource($record));
     }
 
     /**
@@ -85,39 +87,39 @@ class HomestayPolicyTypeController extends AdminBaseController
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        $validator = InputValidator::storeHomestayPolicyType($request);
+        $validator = InputValidator::homestayUtility($request);
 
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-        $record = $this->homestayPolicytypeRepo->find($id);
+        $record = $this->homestayUtilityRepo->find($id);
 
         if (is_null($record)) {
             return $this->sendError('Type not found.');
         }
-        $record = $this->homestayPolicytypeRepo->update($id, $request->all());
+        $record = $this->homestayUtilityRepo->update($id, $request->all());
 
         if($record === false) {
             $$record = ["status" => false];
         }
 
-        return $this->sendResponse(new HomestayPolicyTypeResource($record));
+        return $this->sendResponse(new HomestayUtilityResource($record));
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
-        $result = $this->homestayPolicytypeRepo->delete($id);
+        $result = $this->homestayUtilityRepo->delete($id);
         $response = ["status" => $result];
-        return $this->sendResponse(new HomestayPolicyTypeResource($response));
+        return $this->sendResponse(new HomestayUtilityResource($response));
     }
 }

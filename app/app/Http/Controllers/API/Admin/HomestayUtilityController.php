@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\API\Admin\AdminBaseController;
 use App\Http\Resources\HomestayUtilitesResource;
-use App\Models\HomestayUtility;
+use App\Models\HomestayUtilityType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +17,7 @@ class HomestayUtilityController extends AdminBaseController
      */
     public function index()
     {
-        $utilities = HomestayUtility::with('parent')->get();
+        $utilities = HomestayUtilityType::with('parent')->get();
         return $this->sendResponse(HomestayUtilitesResource::collection($utilities), 'Homestay utility retrieved successfully.');
     }
 
@@ -39,19 +39,19 @@ class HomestayUtilityController extends AdminBaseController
      */
     public function store(Request $request)
     {
-        
+
         $input = $request->all();
-   
+
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-   
+
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+            return $this->sendError('Validation Error.', $validator->errors());
         }
-   
-        $utility = HomestayUtility::create($input);
-        
+
+        $utility = HomestayUtilityType::create($input);
+
         return $this->sendResponse(new HomestayUtilitesResource($utility), 'Utility created successfully.');
     }
 
@@ -63,12 +63,12 @@ class HomestayUtilityController extends AdminBaseController
      */
     public function show($id)
     {
-        $utility = HomestayUtility::find($id);
-  
+        $utility = HomestayUtilityType::find($id);
+
         if (is_null($utility)) {
             return $this->sendError('Utility not found.');
         }
-   
+
         return $this->sendResponse(new HomestayUtilitesResource($utility), true);
     }
 
@@ -93,17 +93,17 @@ class HomestayUtilityController extends AdminBaseController
     public function update(Request $request, $id)
     {
         $input = $request->all();
-   
+
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-   
+
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+            return $this->sendError('Validation Error.', $validator->errors());
         }
 
-        $utility = HomestayUtility::find($id);
-  
+        $utility = HomestayUtilityType::find($id);
+
         if (is_null($utility)) {
             return $this->sendError('Utility not found.');
         }
@@ -111,7 +111,7 @@ class HomestayUtilityController extends AdminBaseController
         $utility->parent_id = $input['parent_id'];
         $utility->name = $input['name'];
         $utility->save();
-   
+
         return $this->sendResponse(new HomestayUtilitesResource($utility));
     }
 
@@ -123,14 +123,14 @@ class HomestayUtilityController extends AdminBaseController
      */
     public function destroy($id)
     {
-        $utility = HomestayUtility::findOrFail($id);
+        $utility = HomestayUtilityType::findOrFail($id);
         $utility->delete();
         return $this->sendResponse(new HomestayUtilitesResource($utility));
     }
 
     public function getListChildById($id)
     {
-        $utility = HomestayUtility::where('parent_id', $id)->get();
+        $utility = HomestayUtilityType::where('parent_id', $id)->get();
         return $this->sendResponse(new HomestayUtilitesResource($utility));
     }
 }

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Validator;
 class HomestayController extends BaseController
 {
 
-    // protected $homestayRepo;
+    protected $homestayRepo;
 
     protected $locationRepo;
 
@@ -58,19 +58,19 @@ class HomestayController extends BaseController
     public function store(Request $request)
     {
         switch ($request->pharse) {
-            case 1: 
+            case 1:
                 $validator = InputValidator::storeHomestayPharse1($request);
                 $data = $this->storePharse1($request);
                 break;
-            case 2: 
+            case 2:
                 $validator = InputValidator::storeHomestayPharse1($request);
                 $data = $this->storePharse1($request);
                 break;
-            default: 
+            default:
                 $data = collect();
         }
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+            return $this->sendError('Validation Error.', $validator->errors());
         }
 
         return $this->sendResponse(new HomestayResource($data));
@@ -85,7 +85,7 @@ class HomestayController extends BaseController
                 'ward_id' => $request->ward_id,
             ];
             $this->locationRepo->create($locationData);
-      
+
             $homestayData = [
                 'name' => $request->name,
                 'type_id' => $request->type_id,
@@ -108,7 +108,7 @@ class HomestayController extends BaseController
                 'ward_id' => $request->ward_id,
             ];
             $this->locationRepo->create($locationData);
-      
+
             $homestayData = [
                 'name' => $request->name,
                 'type_id' => $request->type_id,
