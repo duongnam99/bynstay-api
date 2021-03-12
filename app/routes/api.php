@@ -12,6 +12,7 @@ use App\Http\Controllers\API\Admin\HomestayPolicyController;
 use App\Http\Controllers\API\Admin\HomestayUtilityController;
 use App\Http\Controllers\API\Admin\HomestayPolicyTypeController;
 use App\Http\Controllers\API\Common\HSUtilityController;
+use App\Http\Controllers\API\Common\HSPriceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,14 +39,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::resource('homestay', HomestayController::class);
 
         Route::resource('homestay-utility-type', HomestayUtilityController::class);
-        Route::get('homestay-utility/get-list-child/{id}', [HomestayUtilityController::class, 'getListChildbyId']);
+        Route::get('homestay-utility-type-parents', [HomestayUtilityController::class, 'getParents']);
+        Route::get('homestay-utility-type/get-list-child/{id}', [HomestayUtilityController::class, 'getListChildbyId']);
 
         Route::resource('homestay-type', HomeStayTypeController::class);
         Route::resource('clients', ClientController::class);
         Route::resource('hosts', HostController::class);
-        Route::resource('homestay-policy', HomestayPolicyController::class);
         Route::resource('homestay-policy-type', HomestayPolicyTypeController::class);
+    });
+
+    Route::prefix('common')->group(function () {
+        Route::resource('homestay-policy', HomestayPolicyController::class);
         Route::resource('homestay-utility', HSUtilityController::class);
+        Route::resource('homestay-price', HSPriceController::class);
     });
 
 

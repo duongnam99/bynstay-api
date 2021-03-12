@@ -15,7 +15,7 @@ class AdminBaseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function sendResponse($result, $isGetList = 0)
+    public function sendResponse($result, $isGetList = false)
     {
         if ($isGetList) {
             return response()->json($result, 200)

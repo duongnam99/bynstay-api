@@ -36,7 +36,7 @@ class HomestayController extends AdminBaseController
     public function index()
     {
         $homestay = Homestay::all();
-        return $this->sendResponse(HomestayResource::collection($homestay));
+        return $this->sendResponse(HomestayResource::collection($homestay), true);
     }
 
     /**
@@ -57,18 +57,20 @@ class HomestayController extends AdminBaseController
      */
     public function store(Request $request)
     {
-        switch ($request->pharse) {
-            case 1: 
-                $validator = InputValidator::storeHomestayPharse1($request);
-                $data = $this->storePharse1($request);
-                break;
-            case 2: 
-                $validator = InputValidator::storeHomestayPharse1($request);
-                $data = $this->storePharse1($request);
-                break;
-            default: 
-                $data = collect();
-        }
+        $validator = InputValidator::storeHomestayPharse1($request);
+        $data = $this->storePharse1($request);
+        // switch ($request->pharse) {
+        //     case 1: 
+        //         $validator = InputValidator::storeHomestayPharse1($request);
+        //         $data = $this->storePharse1($request);
+        //         break;
+        //     case 2: 
+        //         $validator = InputValidator::storeHomestayPharse1($request);
+        //         $data = $this->storePharse1($request);
+        //         break;
+        //     default: 
+        //         $data = collect();
+        // }
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }

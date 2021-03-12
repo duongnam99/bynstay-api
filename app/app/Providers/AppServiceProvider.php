@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\HomestayPrice\HomestayPriceRepositoryInterface;
 use App\Repositories\HomestayUtility\HomestayUtilityRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,6 +37,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(
             \App\Repositories\HomestayUtility\HomestayUtilityRepositoryInterface::class,
             \App\Repositories\HomestayUtility\HomestayUtilityRepository::class
+        );
+
+        $this->app->singleton(
+            \App\Repositories\HomestayPrice\HomestayPriceRepositoryInterface::class,
+            \App\Repositories\HomestayPrice\HomestayPriceRepository::class
         );
     }
 

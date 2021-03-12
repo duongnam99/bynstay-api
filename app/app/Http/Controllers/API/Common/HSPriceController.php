@@ -3,21 +3,23 @@
 namespace App\Http\Controllers\API\Common;
 
 use App\Http\Controllers\API\BaseController;
-use App\Http\Resources\HomestayUtilityResource;
-use App\Repositories\HomestayUtility\HomestayUtilityRepositoryInterface;
+use App\Http\Resources\HomestayPriceResource;
+use App\Repositories\HomestayPrice\HomestayPriceRepositoryInterface;
 use App\Validators\InputValidator;
 use Illuminate\Http\Request;
 
-class HSUtilityController extends BaseController
+class HSPriceController extends BaseController
 {
-    protected $homestayUtilityRepo;
+    /**
+     * @var HomestayPriceRepositoryInterface
+     */
+    protected $homestayPriceRepo;
 
-    public function __construct(
-        HomestayUtilityRepositoryInterface $homestayUtilityRepo,
-    )
+    public function __construct(HomestayPriceRepositoryInterface $homestayPriceRepo)
     {
-        $this->homestayUtilityRepo = $homestayUtilityRepo;
+        $this->homestayPriceRepo = $homestayPriceRepo;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,8 +27,8 @@ class HSUtilityController extends BaseController
      */
     public function index()
     {
-        $data = $this->homestayUtilityRepo->getAll();
-        return $this->sendResponse(HomestayUtilityResource::collection($data), true);
+        $data = $this->homestayPriceRepo->getAll();
+        return $this->sendResponse(HomestayPriceResource::collection($data), true);
     }
 
     /**
@@ -48,14 +50,14 @@ class HSUtilityController extends BaseController
     public function store(Request $request)
     {
         $input = $request->all();
-        $validator = InputValidator::homestayUtility($request);
+        $validator = InputValidator::homestayPrice($request);
 
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-        $data = $this->homestayUtilityRepo->create($input);
+        $data = $this->homestayPriceRepo->create($input);
 
-        return $this->sendResponse(new HomestayUtilityResource($data));
+        return $this->sendResponse(new HomestayPriceResource($data));
     }
 
     /**
@@ -66,8 +68,8 @@ class HSUtilityController extends BaseController
      */
     public function show($id)
     {
-        $record = $this->homestayUtilityRepo->find($id);
-        return $this->sendResponse(new HomestayUtilityResource($record));
+        $record = $this->homestayPriceRepo->find($id);
+        return $this->sendResponse(new HomestayPriceResource($record));
     }
 
     /**
@@ -78,7 +80,7 @@ class HSUtilityController extends BaseController
      */
     public function edit($id)
     {
-
+        //
     }
 
     /**
@@ -90,23 +92,23 @@ class HSUtilityController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        $validator = InputValidator::homestayUtility($request);
+        $validator = InputValidator::homestayPrice($request);
 
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-        $record = $this->homestayUtilityRepo->find($id);
+        $record = $this->homestayPriceRepo->find($id);
 
         if (is_null($record)) {
             return $this->sendError('Type not found.');
         }
-        $record = $this->homestayUtilityRepo->update($id, $request->all());
+        $record = $this->homestayPriceRepo->update($id, $request->all());
 
         if($record === false) {
             $$record = ["status" => false];
         }
 
-        return $this->sendResponse(new HomestayUtilityResource($record));
+        return $this->sendResponse(new HomestayPriceResource($record));
     }
 
     /**
@@ -117,8 +119,8 @@ class HSUtilityController extends BaseController
      */
     public function destroy($id)
     {
-        $result = $this->homestayUtilityRepo->delete($id);
+        $result = $this->homestayPriceRepo->delete($id);
         $response = ["status" => $result];
-        return $this->sendResponse(new HomestayUtilityResource($response));
+        return $this->sendResponse(new HomestayPriceResource($response));
     }
 }

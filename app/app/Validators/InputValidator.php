@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Validator;
 
 class InputValidator {
 
-    /**
-     * @param Illuminate\Http\Request
-     */
     public static function storeHomestayPharse1(Request $request)
     {
         return Validator::make($request->all(), [
@@ -39,6 +36,15 @@ class InputValidator {
         return Validator::make($request->all(), [
             'homestay_id' => 'required',
             'utility_id' => 'required',
+        ]);
+    }
+
+    public static function homestayPrice(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'homestay_id' => 'required',
+            'price_normal' => 'required',
+            'max_night' => 'required',
         ]);
     }
 }

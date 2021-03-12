@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\API\Admin\AdminBaseController;
-use App\Http\Resources\HomestayUtilitesResource;
+use App\Http\Resources\HomestayUtilityTypeResource;
 use App\Models\HomestayUtilityType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +18,7 @@ class HomestayUtilityController extends AdminBaseController
     public function index()
     {
         $utilities = HomestayUtilityType::with('parent')->get();
-        return $this->sendResponse(HomestayUtilitesResource::collection($utilities), 'Homestay utility retrieved successfully.');
+        return $this->sendResponse(HomestayUtilityTypeResource::collection($utilities), 'Homestay utility retrieved successfully.');
     }
 
     /**
@@ -52,7 +52,7 @@ class HomestayUtilityController extends AdminBaseController
 
         $utility = HomestayUtilityType::create($input);
 
-        return $this->sendResponse(new HomestayUtilitesResource($utility), 'Utility created successfully.');
+        return $this->sendResponse(new HomestayUtilityTypeResource($utility), 'Utility created successfully.');
     }
 
     /**
@@ -69,7 +69,7 @@ class HomestayUtilityController extends AdminBaseController
             return $this->sendError('Utility not found.');
         }
 
-        return $this->sendResponse(new HomestayUtilitesResource($utility), true);
+        return $this->sendResponse(new HomestayUtilityTypeResource($utility), true);
     }
 
     /**
@@ -112,7 +112,7 @@ class HomestayUtilityController extends AdminBaseController
         $utility->name = $input['name'];
         $utility->save();
 
-        return $this->sendResponse(new HomestayUtilitesResource($utility));
+        return $this->sendResponse(new HomestayUtilityTypeResource($utility));
     }
 
     /**
@@ -125,12 +125,20 @@ class HomestayUtilityController extends AdminBaseController
     {
         $utility = HomestayUtilityType::findOrFail($id);
         $utility->delete();
-        return $this->sendResponse(new HomestayUtilitesResource($utility));
+        return $this->sendResponse(new HomestayUtilityTypeResource($utility));
     }
 
     public function getListChildById($id)
     {
         $utility = HomestayUtilityType::where('parent_id', $id)->get();
-        return $this->sendResponse(new HomestayUtilitesResource($utility));
+        return $this->sendResponse(new HomestayUtilityTypeResource($utility));
     }
+
+    public function getParents()
+    {
+        $utilities = HomestayUtilityType::where('parent_id', null)->get();
+        return $this->sendResponse(HomestayUtilityTypeResource::collection($utilities), true);
+    }
+
+
 }
