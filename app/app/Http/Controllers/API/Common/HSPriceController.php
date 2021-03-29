@@ -55,9 +55,16 @@ class HSPriceController extends BaseController
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-        $data = $this->homestayPriceRepo->create($input);
-
-        return $this->sendResponse(new HomestayPriceResource($data));
+        
+        if (!$this->homestayPriceRepo->isExist($input)) {
+            $data = $this->homestayPriceRepo->create($input);
+            return $this->sendResponse(new HomestayPriceResource($data));
+        }
+        
+        return $this->sendResponse([
+            'status' => false,
+            'message' => 'Policy already exist'
+        ]);
     }
 
     /**
@@ -69,6 +76,12 @@ class HSPriceController extends BaseController
     public function show($id)
     {
         $record = $this->homestayPriceRepo->find($id);
+        return $this->sendResponse(new HomestayPriceResource($record));
+    }
+
+    public function getHsPrice($hsId)
+    {
+        $record = $this->homestayPriceRepo->findBy('homestay_id', $hsId);
         return $this->sendResponse(new HomestayPriceResource($record));
     }
 
@@ -100,7 +113,7 @@ class HSPriceController extends BaseController
         $record = $this->homestayPriceRepo->find($id);
 
         if (is_null($record)) {
-            return $this->sendError('Type not found.');
+            return $this->sendError('Price not found.');
         }
         $record = $this->homestayPriceRepo->update($id, $request->all());
 
@@ -123,4 +136,26 @@ class HSPriceController extends BaseController
         $response = ["status" => $result];
         return $this->sendResponse(new HomestayPriceResource($response));
     }
+
+    public function updateByHomestayId(Request $request, $id)
+    {
+        $validator = InputValidator::homestayPrice($request);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+        $record = $this->homestayPriceRepo->findBy('homestay_id', $id);
+
+        if (is_null($record)) {
+            return $this->sendError('Price not found.');
+        }
+        $record = $this->homestayPriceRepo->update($record->id, $request->all());
+
+        if($record === false) {
+            $$record = ["status" => false];
+        }
+
+        return $this->sendResponse(new HomestayPriceResource($record));
+    }
+
 }

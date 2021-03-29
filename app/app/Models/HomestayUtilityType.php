@@ -17,6 +17,7 @@ class HomestayUtilityType extends Model
     {
 
     }
+    
     public function parent()
     {
         return $this->belongsTo(HomestayUtilityType::class, 'parent_id');

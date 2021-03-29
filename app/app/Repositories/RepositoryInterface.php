@@ -38,4 +38,8 @@ interface RepositoryInterface
      * @return mixed
      */
     public function delete($id);
+
+    public function findManyBy($columnName, $value);
+    
+    public function findBy($columnName, $value);
 }

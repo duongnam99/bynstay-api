@@ -58,22 +58,11 @@ class HomestayController extends AdminBaseController
     public function store(Request $request)
     {
         $validator = InputValidator::storeHomestayPharse1($request);
-        $data = $this->storePharse1($request);
-        // switch ($request->pharse) {
-        //     case 1: 
-        //         $validator = InputValidator::storeHomestayPharse1($request);
-        //         $data = $this->storePharse1($request);
-        //         break;
-        //     case 2: 
-        //         $validator = InputValidator::storeHomestayPharse1($request);
-        //         $data = $this->storePharse1($request);
-        //         break;
-        //     default: 
-        //         $data = collect();
-        // }
+
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
+        $data = $this->storePharse1($request);
 
         return $this->sendResponse(new HomestayResource($data));
     }
@@ -82,40 +71,17 @@ class HomestayController extends AdminBaseController
         try{
 
             $locationData = [
-                'provine_id' => $request->provine_id,
+                'province_id' => $request->province_id,
                 'district_id' => $request->district_id,
                 'ward_id' => $request->ward_id,
             ];
-            $this->locationRepo->create($locationData);
-      
+            $locationResult = $this->locationRepo->create($locationData);
+
             $homestayData = [
                 'name' => $request->name,
                 'type_id' => $request->type_id,
                 'location' => $request->location,
-                'location_id' => 1
-            ];
-            return $this->homestayRepo->create($homestayData);
-
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-    }
-
-    public function storePharse2($request) {
-        try{
-
-            $locationData = [
-                'provine_id' => $request->provine_id,
-                'district_id' => $request->district_id,
-                'ward_id' => $request->ward_id,
-            ];
-            $this->locationRepo->create($locationData);
-      
-            $homestayData = [
-                'name' => $request->name,
-                'type_id' => $request->type_id,
-                'location' => $request->location,
-                'location_id' => 1
+                'location_id' => $locationResult->id
             ];
             return $this->homestayRepo->create($homestayData);
 
@@ -133,7 +99,11 @@ class HomestayController extends AdminBaseController
      */
     public function show($id)
     {
-        //
+        $homestayResult = $this->homestayRepo->find($id);
+        $locationResult = $this->locationRepo->find($homestayResult->location_id);
+        $homestayResult->location_info = $locationResult;
+
+        return response()->json($homestayResult);
     }
 
     /**
@@ -156,7 +126,25 @@ class HomestayController extends AdminBaseController
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = InputValidator::storeHomestayPharse1($request);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+        $record = $this->homestayRepo->find($id);
+
+        if (is_null($record)) {
+            return $this->sendError('Record not found.');
+        }
+
+        $homestay = $this->homestayRepo->update($id, $request->all());
+        $location = $this->locationRepo->update($homestay->location_id, $request->all());
+
+        if($record === false) {
+            $$record = ["status" => false];
+        }
+
+        return $this->sendResponse(new HomestayResource($record));
     }
 
     /**

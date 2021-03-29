@@ -2,8 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Repositories\RepositoryInterface;
-
+// use App\Repositories\RepositoryInterface;
 abstract class BaseRepository implements RepositoryInterface
 {
     //model muốn tương tác
@@ -66,5 +65,15 @@ abstract class BaseRepository implements RepositoryInterface
         }
 
         return false;
+    }
+
+    public function findBy($columnName, $value)
+    {
+        return $this->model->where($columnName, $value)->first();
+    }
+
+    public function findManyBy($columnName, $value)
+    {
+        return $this->model->where($columnName, $value)->get();
     }
 }

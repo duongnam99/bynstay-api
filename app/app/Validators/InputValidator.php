@@ -12,9 +12,11 @@ class InputValidator {
         return Validator::make($request->all(), [
             'name' => 'required',
             'location' => 'required',
-            'provine_id' => 'required'
+            'province_id' => 'required',
+            'type_id' => 'required'
         ]);
     }
+
     public static function storeHomestayPolicyType(Request $request)
     {
         return Validator::make($request->all(), [
@@ -44,7 +46,8 @@ class InputValidator {
         return Validator::make($request->all(), [
             'homestay_id' => 'required',
             'price_normal' => 'required',
-            'max_night' => 'required',
+            'max_night' => 'required|numeric|min:0|not_in:0',
+            'max_guest' => 'required|numeric|min:0|not_in:0',
         ]);
     }
 }

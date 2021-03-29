@@ -11,5 +11,11 @@ class Location extends Model
 
     protected $table = 'locations';
     public $timestamps = false;
-    protected $fillable = ['provine_id', 'district_id', 'ward_id'];
+    protected $fillable = ['province_id', 'district_id', 'ward_id'];
+
+    public function homestay()
+    {
+        return $this->hasOne(Homestay::class, 'location_id');
+    }
+
 }

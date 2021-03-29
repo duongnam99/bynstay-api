@@ -53,9 +53,17 @@ class HomestayPolicyController extends AdminBaseController
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-        $data = $this->homestayPolicyRepo->create($input);
+        
+        if (!$this->homestayPolicyRepo->isExist($input)) {
+            $data = $this->homestayPolicyRepo->create($input);
+            return $this->sendResponse(new HomestayPolicyResource($data));
+        }
+        
+        return $this->sendResponse([
+            'status' => false,
+            'message' => 'Policy already exist'
+        ]);
 
-        return $this->sendResponse(new HomestayPolicyResource($data));
     }
 
     /**
@@ -117,8 +125,16 @@ class HomestayPolicyController extends AdminBaseController
      */
     public function destroy($id)
     {
-        $result = $this->homestayPolicyRepo->delete($id);
+        $policy = $this->homestayPolicyRepo->findBy('policy_id', $id);
+        $result = $this->homestayPolicyRepo->delete($policy->id);
         $response = ["status" => $result];
         return $this->sendResponse(new HomestayPolicyResource($response));
+    }
+
+    public function getFull($id)
+    {
+        $result = $this->homestayPolicyRepo->getFull($id);
+        return $this->sendResponse($result);
+
     }
 }

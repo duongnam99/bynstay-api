@@ -35,11 +35,10 @@ class RegisterController extends BaseController
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
         $success['token'] =  $user->createToken('bynstay')->plainTextToken;
-        $success['name'] =  $user->name;
-
+        $success['user'] =  $user;
 
         if ($request->has('user_type')) {
-            $success['user_type'] =  $user->user_type;
+            $success['user_type'] =  $request->user_type;
             if ($request->user_type == User::CLIENT) {
                 $this->createSubEntity(new Client(), $user->id);
             } elseif ($request->user_type == User::HOSTS) {
@@ -49,8 +48,6 @@ class RegisterController extends BaseController
             $this->createSubEntity(new Client(), $user->id);
         }
 
-        
-   
         return $this->sendResponse($success, 'User register successfully.');
     }
 
@@ -72,7 +69,8 @@ class RegisterController extends BaseController
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
             $success['token'] =  $user->createToken('bynstay')->plainTextToken; 
-            $success['name'] =  $user->name;
+            $success['email'] =  $user->email;
+            $success['user'] =  $user;
    
             return $this->sendResponse($success, 'User login successfully.');
         } 

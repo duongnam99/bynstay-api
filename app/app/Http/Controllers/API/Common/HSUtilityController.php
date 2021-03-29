@@ -53,9 +53,16 @@ class HSUtilityController extends BaseController
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-        $data = $this->homestayUtilityRepo->create($input);
+        if (!$this->homestayUtilityRepo->isExist($input)) {
+            $data = $this->homestayUtilityRepo->create($input);
+            return $this->sendResponse(new HomestayUtilityResource($data));
+        } 
 
-        return $this->sendResponse(new HomestayUtilityResource($data));
+        return $this->sendResponse([
+            'status' => false,
+            'message' => 'Utility already exist'
+        ]);
+        
     }
 
     /**
@@ -117,8 +124,33 @@ class HSUtilityController extends BaseController
      */
     public function destroy($id)
     {
-        $result = $this->homestayUtilityRepo->delete($id);
+        $util = $this->homestayUtilityRepo->findBy('utility_id', $id);
+        $result = $this->homestayUtilityRepo->delete($util->id);
         $response = ["status" => $result];
         return $this->sendResponse(new HomestayUtilityResource($response));
+    }
+
+    public function getUtilityParent()
+    {
+        $result = $this->homestayUtilityRepo->getParent();
+        return $this->sendResponse(new HomestayUtilityResource($result));
+    }
+
+    public function getUtilityChild()
+    {
+        $result = $this->homestayUtilityRepo->getChild();
+        return $this->sendResponse(new HomestayUtilityResource($result));
+    }
+
+    public function getUtilityChildByParent($id)
+    {
+        $result = $this->homestayUtilityRepo->getChildByParent($id);
+        return $this->sendResponse(new HomestayUtilityResource($result));
+    }
+
+    public function getHsUtil($id)
+    {
+        $result = $this->homestayUtilityRepo->getHsUtil($id);
+        return $this->sendResponse($result);
     }
 }

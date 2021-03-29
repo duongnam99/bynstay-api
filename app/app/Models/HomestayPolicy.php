@@ -10,4 +10,6 @@ class HomestayPolicy extends Model
     use HasFactory;
     protected $table = 'homestay_policies';
     protected $fillable = ['homestay_id', 'policy_id', 'content', 'updated_at', 'created_at'];
+
+
 }

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Repositories\HomestayPrice\HomestayPriceRepositoryInterface;
 use App\Repositories\HomestayUtility\HomestayUtilityRepositoryInterface;
+
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

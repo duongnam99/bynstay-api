@@ -12,9 +12,9 @@ class HomestayRepository extends BaseRepository implements HomestayRepositoryInt
         return \App\Models\Homestay::class;
     }
 
-    public function getHomestay()
+    public function getHomestay($id)
     {
-        return $this->model->select('product_name')->take(5)->get();
+        return $this->model->where('id', $id)->first()->location()->get();
     }
 
     public function storeHometayPharse1($data)

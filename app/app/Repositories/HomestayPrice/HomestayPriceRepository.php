@@ -11,4 +11,13 @@ class HomestayPriceRepository extends BaseRepository implements HomestayPriceRep
     {
         return HomestayPrice::class;
     }
+
+    public function isExist($input)
+    {
+        if ($this->model->where('homestay_id', $input['homestay_id'])->first()) {
+            return true;
+        }
+
+        return false;
+    }
 }

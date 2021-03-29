@@ -23,12 +23,12 @@ class BaseController extends Controller
             ->header('Access-Control-Expose-Headers', 'X-Total-Count')
             ->header('X-Total-Count', $result->count());
         }
-//
-//    	$response = [
-//            'success' => true,
-//            'data'    => $result,
-//            'message' => $message,
-//        ];
+
+   	//     $response = [
+    //        'success' => true,
+    //        'data'    => $result,
+    //        'message' => $message,
+    //    ];
 
         return response()->json($result, 200);
     }

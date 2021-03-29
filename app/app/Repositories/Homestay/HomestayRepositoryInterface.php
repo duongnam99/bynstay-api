@@ -3,7 +3,7 @@ namespace App\Repositories\Homestay;
 
 interface HomestayRepositoryInterface
 {
-    public function getHomestay();
+    public function getHomestay($id);
 
     public function storeHometayPharse1($data);
 }
