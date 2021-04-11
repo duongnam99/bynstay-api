@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\API\Common;
 
+use App\Http\Controllers\API\BaseController;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\HomestayImageResource;
 use App\Repositories\HomestayImage\HomestayImageRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
-class HSImageController extends Controller
+class HSImageController extends BaseController
 {
     protected $homestayImageRepo;
 
@@ -46,13 +49,16 @@ class HSImageController extends Controller
     {   
         if ($request->has('file')) {
             foreach($request->file as $file) {
-                Storage::disk('public')->put($file->getClientOriginalName(), $file);
+                
+                $path = Storage::disk('public_uploads')->put('homestay', $file);
+                // Storage::disk('public')->put($file->getClientOriginalName(), File::get($file));
+                $data = $this->homestayImageRepo->create([
+                    'image' => $path,
+                    'homestay_id' => $request->homestay_id
+                ]);
             }
-            $data = $this->homestayImageRepo->create([
-                'image' => $file->getClientOriginalName(),
-                'homestay_id' => $request->homestay_id
-            ]);
-            return $this->sendResponse(new HomestayImageResource($data));
+
+            return response()->json(['success' => true]);
         }
       
         return response()->json(['success' => false]);
@@ -101,6 +107,17 @@ class HSImageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $result = $this->homestayImageRepo->delete($id);
+        $response = ["status" => $result];
+        return $this->sendResponse(new HomestayImageResource($response));
+    }
+
+    public function getHsImage($hsId)
+    {
+        $result = $this->homestayImageRepo->findManyBy('homestay_id', $hsId);
+        foreach($result as $key => $image) {
+            $result[$key]['url'] = asset('uploads/'.$image['image']);
+        }
+        return response()->json($result);
     }
 }

@@ -67,6 +67,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('get-homestay-price/{hs_id}', [HSPriceController::class, 'getHsPrice']);
         Route::put('update-homestay-price/{id}', [HSPriceController::class, 'updateByHomestayId']);
         Route::resource('homestay-image', HSImageController::class);
+        Route::get('get-homestay-image/{hs_id}', [HSImageController::class, 'getHsImage']);
 
         Route::prefix('location')->group(function () {
             Route::get('district', [LocationController::class, 'getDistrict']);
