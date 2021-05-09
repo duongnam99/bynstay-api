@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Repositories\HomestayImage\HomestayImageRepository;
 use App\Repositories\HomestayImage\HomestayImageRepositoryInterface;
+use App\Repositories\HomestayOrder\HomestayOrderRepository;
+use App\Repositories\HomestayOrder\HomestayOrderRepositoryInterface;
 use App\Repositories\Location\LocationRepository;
 use App\Repositories\Location\LocationRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +30,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             HomestayImageRepositoryInterface::class,
             HomestayImageRepository::class
+        );
+        $this->app->bind(
+            HomestayOrderRepositoryInterface::class,
+            HomestayOrderRepository::class
         );
     }
 }

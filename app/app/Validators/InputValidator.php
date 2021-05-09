@@ -50,4 +50,22 @@ class InputValidator {
             'max_guest' => 'required|numeric|min:0|not_in:0',
         ]);
     }
+
+    public static function updateHostPw(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'email' => 'required',
+            'password' => 'required',
+            'new_password' => 'required',
+        ]);
+    }
+
+    public static function homestayOrder(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'customer_email' => 'required|email',
+            'customer_name' => 'required',
+            'customer_phone' => 'required',
+        ]);
+    }
 }

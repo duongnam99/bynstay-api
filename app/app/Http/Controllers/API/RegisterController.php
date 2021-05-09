@@ -7,6 +7,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Client;
 use App\Models\Host;
 use App\Models\User;
+use App\Validators\InputValidator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -78,4 +79,22 @@ class RegisterController extends BaseController
             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
         } 
     }
+
+    public function updatePassword(Request $request)
+    {
+        $validator = InputValidator::updateHostPw($request);
+        if ($request->new_password != $request->new_cf_password) {
+            return response()->json(['status' => false]);
+        }
+
+        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
+            $user = Auth::user(); 
+            $user->password = $request->new_password;
+            $user->save();
+            return response()->json(['status' => true]);
+        } 
+
+        return response()->json(['status' => false]);
+    }
+
 }
