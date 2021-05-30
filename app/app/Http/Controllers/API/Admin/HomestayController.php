@@ -81,7 +81,9 @@ class HomestayController extends AdminBaseController
                 'name' => $request->name,
                 'type_id' => $request->type_id,
                 'location' => $request->location,
-                'location_id' => $locationResult->id
+                'location_id' => $locationResult->id,
+                'user_id' => $request->user()->id,
+                'des' => $request->des
             ];
             return $this->homestayRepo->create($homestayData);
 
@@ -156,5 +158,45 @@ class HomestayController extends AdminBaseController
     public function destroy($id)
     {
         //
+    }
+
+    public function suggested()
+    {
+        $homestay = Homestay::inRandomOrder()->limit(6)->get();
+        return response()->json(['homestay' => $homestay]);
+    }
+
+    public function getByPlace(Request $request)
+    {
+        if ($request->has('id')) {
+            $id = $request->get('id');
+            if (strpos($id, '_') !== false) {
+                $id = explode('_', $id)[1];
+
+                $locations = $this->locationRepo->findManyBy('district_id', $id);
+            } else {
+                $locations = $this->locationRepo->findManyBy('province_id', $id);
+            }
+            
+            $hs = $this->homestayRepo->findByLocation($locations->pluck('id'));
+            return response()->json([
+                'ids' => $hs->pluck('id'),
+                'hs' => $hs
+            ]);
+        }
+        return response()->json(['status' => false]);
+    }
+
+    public function filterHsType(Request $request)
+    {
+        if ($request->has('ids')) {
+            
+            $hs = $this->homestayRepo->filterHsType($request->ids, $request->type);
+            return response()->json([
+                'ids' => $hs->pluck('id'),
+                'hs' => $hs
+            ]);
+        }
+        return response()->json(['status' => false]);
     }
 }

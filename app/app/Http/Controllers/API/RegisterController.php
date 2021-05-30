@@ -9,6 +9,7 @@ use App\Models\Host;
 use App\Models\User;
 use App\Validators\InputValidator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends BaseController
@@ -29,7 +30,7 @@ class RegisterController extends BaseController
         ]);
    
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+            return $this->sendError('Validation Error.', $validator->errors(), 400);       
         }
    
         $input = $request->all();
@@ -67,6 +68,15 @@ class RegisterController extends BaseController
      */
     public function login(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+        
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 400);       
+        }
+
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
             $success['token'] =  $user->createToken('bynstay')->plainTextToken; 
@@ -75,23 +85,57 @@ class RegisterController extends BaseController
    
             return $this->sendResponse($success, 'User login successfully.');
         } 
-        else{ 
-            return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
-        } 
+
+        return $this->sendError('Unauthorised.', ['error'=>'Unauthorised'], 403);
     }
 
     public function updatePassword(Request $request)
     {
-        $validator = InputValidator::updateHostPw($request);
+
+        $validator = InputValidator::updatePw($request);
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 400);       
+        }
+
         if ($request->new_password != $request->new_cf_password) {
             return response()->json(['status' => false]);
         }
-
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
-            $user = Auth::user(); 
-            $user->password = $request->new_password;
+        
+        if($user = User::where('email', $request->email)->first()){ 
+            $user->password = bcript($request->new_password);
             $user->save();
-            return response()->json(['status' => true]);
+            return response()->json([
+                'status' => true,
+                'user' => $user
+            ]);
+        } 
+
+        return response()->json(['status' => false]);
+    }
+
+    public function edit(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'name' => 'required',
+        ]);
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 400);       
+        }
+        
+        if($user = User::where('email', $request->email)->first()){ 
+            $user->name = $request->name;
+            $user->phone = $request->phone;
+            if ($request->has('file')) {
+                $path = Storage::disk('public_uploads')->put('user', $request->file[0]);
+                $user->avatar = $path;
+            }
+            $user->save();
+            return response()->json([
+                'status' => true,
+                'user' => $user
+            ]);
         } 
 
         return response()->json(['status' => false]);

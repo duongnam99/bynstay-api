@@ -21,4 +21,20 @@ class HomestayRepository extends BaseRepository implements HomestayRepositoryInt
     {
         return $this->model->create($data);
     }
+
+    public function findByLocation($location)
+    {
+        return $this->model->whereIn('location_id', $location)->get();
+    }
+
+    public function filterHsType($ids, $type)
+    {
+        return $this->model->whereIn('id', $ids)->where('type_id', $type)->get();
+    }
+
+    public function getHsIdByUser($userId)
+    {
+        return $this->model->where('user_id', $userId)->pluck('id');
+    }
+
 }

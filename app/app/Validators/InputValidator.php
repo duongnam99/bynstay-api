@@ -51,12 +51,13 @@ class InputValidator {
         ]);
     }
 
-    public static function updateHostPw(Request $request)
+    public static function updatePw(Request $request)
     {
         return Validator::make($request->all(), [
             'email' => 'required',
             'password' => 'required',
             'new_password' => 'required',
+            'new_cf_password' => 'required',
         ]);
     }
 
@@ -66,6 +67,13 @@ class InputValidator {
             'customer_email' => 'required|email',
             'customer_name' => 'required',
             'customer_phone' => 'required',
+        ]);
+    }
+
+    public static function wishlist(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'homestay_id' => 'required',
         ]);
     }
 }

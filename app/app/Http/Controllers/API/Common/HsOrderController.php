@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Common;
 
 use App\Http\Controllers\API\BaseController;
 use App\Http\Controllers\Controller;
+use App\Models\Host;
+use App\Repositories\Homestay\HomestayRepositoryInterface;
 use App\Repositories\HomestayOrder\HomestayOrderRepositoryInterface;
 use App\Validators\InputValidator;
 use Illuminate\Http\Request;
@@ -11,10 +13,15 @@ use Illuminate\Http\Request;
 class HsOrderController extends BaseController
 {
     protected $homestayOrderRepo;
+    protected $homestayRepo;
 
-    public function __construct(HomestayOrderRepositoryInterface $homestayOrderRepo)
+    public function __construct(
+        HomestayOrderRepositoryInterface $homestayOrderRepo,
+        HomestayRepositoryInterface $homestayRepo    
+    )
     {
         $this->homestayOrderRepo = $homestayOrderRepo;
+        $this->homestayRepo = $homestayRepo;
     }
 
     /**
@@ -51,7 +58,7 @@ class HsOrderController extends BaseController
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-        
+
         $data = $this->homestayOrderRepo->create($input);
         return $this->sendResponse($data);
         
@@ -93,7 +100,10 @@ class HsOrderController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        //
+        $input = $request->all();
+
+        $result = $this->homestayOrderRepo->update($id, $input);
+        return response()->json($result);
     }
 
     /**
@@ -116,5 +126,33 @@ class HsOrderController extends BaseController
             $range[$key]['to'] = $order['end_date'];
         }
         return response()->json(['range' => $range]);
+    }
+
+    public function getCustomerByHost(Request $request)
+    {
+        $homestayIds = $this->homestayRepo->getHsIdByUser( $request->user()->id);
+        $orders = $this->homestayOrderRepo->getOrderByHomestay($homestayIds);
+        $customers = $orders->map->only(['customer_email', 'customer_name', 'customer_phone']);
+
+        return response()->json($customers);
+    }
+
+    public function getOrderByHost(Request $request)
+    {
+        $homestayIds = $this->homestayRepo->getHsIdByUser($request->user()->id);
+        $orders = $this->homestayOrderRepo->getOrderByHomestay($homestayIds);
+
+        return response()->json($orders);
+    }
+
+    public function getCustomerOrder(Request $request)
+    {
+        if ($request->email != $request->user()->email) {
+            return $this->sendError("No permission", [], 403);
+        }
+        
+        $orders = $this->homestayOrderRepo->getOrderByCustomer($request->email);
+   
+        return response()->json($orders);
     }
 }

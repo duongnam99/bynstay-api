@@ -20,4 +20,9 @@ class HomestayPriceRepository extends BaseRepository implements HomestayPriceRep
 
         return false;
     }
+
+    public function findAndSort($ids, $type)
+    {
+        return $this->model->whereIn('homestay_id', $ids)->orderBy('price_normal', $type)->get();
+    }
 }

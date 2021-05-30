@@ -9,7 +9,7 @@ class Homestay extends Model
 {
     use HasFactory;
     protected $table = 'homestays';
-    protected $fillable = ['name', 'location', 'location_id', 'type_id', 'created_at', 'updated_at'];
+    protected $fillable = ['name', 'location', 'location_id', 'des', 'type_id', 'approved', 'user_id', 'created_at', 'updated_at'];
 
     public function location()
     {

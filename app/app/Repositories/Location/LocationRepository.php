@@ -12,5 +12,9 @@ class LocationRepository extends BaseRepository implements LocationRepositoryInt
         return \App\Models\Location::class;
     }
 
+    public function findWithHomestay($column, $value)
+    {
+        return $this->model->where($column, $value)->with('homestay')->get();
+    }
 
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Common;
 
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\HomestayUtilityResource;
+use App\Models\HomestayUtility;
+use App\Models\HomestayUtilityType;
 use App\Repositories\HomestayUtility\HomestayUtilityRepositoryInterface;
 use App\Validators\InputValidator;
 use Illuminate\Http\Request;
@@ -152,5 +154,16 @@ class HSUtilityController extends BaseController
     {
         $result = $this->homestayUtilityRepo->getHsUtil($id);
         return $this->sendResponse($result);
+    }
+
+    public function filterUtil(Request $request)
+    {
+        $utilChildIds = HomestayUtilityType::whereIn('parent_id', $request->idUtils)->pluck('id');
+        $result = HomestayUtility::whereIn('homestay_id', $request->ids)->whereIn('utility_id', $utilChildIds)->get();
+
+        return response()->json([
+            'ids' => $result->pluck('id'),
+            'hs' => $result
+        ]);
     }
 }

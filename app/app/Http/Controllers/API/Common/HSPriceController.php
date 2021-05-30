@@ -158,4 +158,22 @@ class HSPriceController extends BaseController
         return $this->sendResponse(new HomestayPriceResource($record));
     }
 
+    public function sortByPrice(Request $request)
+    {
+        if ($request->has('ids')) {
+            if ($request->type == 1) {
+                $type = 'desc';
+            } else {
+                $type = 'asc';
+            }
+            $result = $this->homestayPriceRepo->findAndSort($request->ids, $type);
+
+            return response()->json([
+                'ids' => $result->pluck('id'),
+                'hs' => $result
+            ]);
+        }
+        return $this->sendResponse(['status' => false]);
+    }
+
 }

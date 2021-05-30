@@ -17,6 +17,7 @@ use App\Http\Controllers\API\Common\HsOrderController;
 use App\Http\Controllers\API\Common\HSUtilityController;
 use App\Http\Controllers\API\Common\HSPriceController;
 use App\Http\Controllers\API\Common\LocationController;
+use App\Http\Controllers\API\Customer\WishListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,15 +30,14 @@ use App\Http\Controllers\API\Common\LocationController;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
 Route::post('register', [RegisterController::class, 'register']);
 Route::post('login', [RegisterController::class, 'login']);
-Route::post('update-pw', [RegisterController::class, 'updatePassword']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::put('update-pw', [RegisterController::class, 'updatePassword']); 
+    Route::post('user/edit', [RegisterController::class, 'edit']); 
+
     Route::get('/users', [UserController::class, 'users']);
     Route::prefix('admin')->group(function () {
         Route::resource('ad-homestay', HomestayController::class);
@@ -78,6 +78,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('province/{id}', [LocationController::class, 'getDistrictByProvince']);
             Route::get('ward', [LocationController::class, 'getWard']);
         });
+
+        Route::get('customer-by-host', [HsOrderController::class, 'getCustomerByHost']);
+        Route::get('order-host', [HsOrderController::class, 'getOrderByHost']);
+        Route::put('homestay-order/{id}', [HsOrderController::class, 'update']);
+
+    });
+    
+    Route::prefix('cus')->group(function () {
+        Route::get('my-order', [HsOrderController::class, 'getCustomerOrder']);
+        Route::resource('wishlist', WishListController::class);
+        Route::get('wishlist-hs', [WishListController::class, 'getHs']);
+        Route::get('del-wishlist-hs/{id}', [WishListController::class, 'deleteWishHs']);
+        Route::get('check-wished/{id}', [WishListController::class, 'checkWished']);
     });
 
 });
@@ -85,13 +98,30 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::prefix('pub')->group(function () {
     Route::get('get-homestay-image/{hs_id}', [HSImageController::class, 'getHsImage']);
     Route::get('get-homestay-price/{hs_id}', [HSPriceController::class, 'getHsPrice']);
+
     Route::get('hs-util/{id}', [HSUtilityController::class, 'getHsUtil']);
     Route::get('homestay/{id}', [HomestayController::class, 'show']);
+    Route::get('homestay-type', [HomeStayTypeController::class, 'index']);
     Route::get('homestay-type/{id}', [HomeStayTypeController::class, 'show']);
+
     Route::get('homestay-policy-full/{id}', [HomestayPolicyController::class, 'getFull']);
     Route::post('homestay-order', [HsOrderController::class, 'store']);
     Route::get('homestay-order/{id}', [HsOrderController::class, 'show']);
     Route::get('homestay-ordered-time/{id}', [HsOrderController::class, 'orderTime']);
+
+    Route::get('homestay-suggested', [HomestayController::class, 'suggested']);
+    Route::get('place-suggested', [LocationController::class, 'suggested']);
+
+    Route::get('search-place', [LocationController::class, 'search']);
+    Route::get('hs-by-place', [HomestayController::class, 'getByPlace']);
+
+    Route::get('homestay-utility-type-parents', [HomestayUtilityController::class, 'getParents']);
+    Route::post('sort-hs', [HSPriceController::class, 'sortByPrice']);
+    Route::post('filter-hs-type', [HomestayController::class, 'filterHsType']);
+    Route::post('filter-hs-util', [HSUtilityController::class, 'filterUtil']);
+    Route::get('homestay', [HomestayController::class, 'index']);
+
+
 });
 
 Route::prefix('payment')->group(function () {

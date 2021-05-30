@@ -7,7 +7,6 @@ use App\Repositories\HomestayOrder\HomestayOrderRepositoryInterface;
 use FasterPay\Gateway;
 use Illuminate\Http\Request;
 
-// require_once(__DIR__.'/../../../Libs/Payment/FasterPay/lib/autoload.php');
 require_once(__DIR__.'/../../../../Libs/Payment/FasterPay/lib/autoload.php');
 
 class HsCheckoutController extends BaseController

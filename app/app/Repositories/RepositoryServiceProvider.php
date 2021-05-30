@@ -6,8 +6,8 @@ use App\Repositories\HomestayImage\HomestayImageRepository;
 use App\Repositories\HomestayImage\HomestayImageRepositoryInterface;
 use App\Repositories\HomestayOrder\HomestayOrderRepository;
 use App\Repositories\HomestayOrder\HomestayOrderRepositoryInterface;
-use App\Repositories\Location\LocationRepository;
-use App\Repositories\Location\LocationRepositoryInterface;
+use App\Repositories\WishList\WishListRepository;
+use App\Repositories\WishList\WishListRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -34,6 +34,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             HomestayOrderRepositoryInterface::class,
             HomestayOrderRepository::class
+        );
+        $this->app->bind(
+            WishListRepositoryInterface::class,
+            WishListRepository::class
         );
     }
 }
