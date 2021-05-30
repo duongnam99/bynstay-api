@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API\Common;
 
 use App\Http\Controllers\API\BaseController;
+use App\Mail\MailOrder;
 use App\Repositories\HomestayOrder\HomestayOrderRepositoryInterface;
 use FasterPay\Gateway;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 require_once(__DIR__.'/../../../../Libs/Payment/FasterPay/lib/autoload.php');
 
@@ -37,7 +39,7 @@ class HsCheckoutController extends BaseController
         $form = $gateway->paymentForm()->buildForm(
             [
                 'description' => 'Test order',
-                'amount' => $request->amount/22900,
+                'amount' => $request->amount/23100,
                 'currency' => 'USD',
                 'merchant_order_id' => $request->merchant_order_id,
                 'success_url' => $this->buildSuccessUrl($request->hs_id, $request->merchant_order_id),
@@ -60,6 +62,8 @@ class HsCheckoutController extends BaseController
 
     public function pingback(Request $request)
     {
+        
+        return $this->sendMail($request->all());
         $gateway = $this->initGateway();
 
         $signVersion = \FasterPay\Services\Signature::SIGN_VERSION_1;
@@ -96,6 +100,7 @@ class HsCheckoutController extends BaseController
         // }
         
         $this->processOrder($pingbackData);
+        $this->sendMail($pingbackData);
         exit();
     }
 
@@ -122,5 +127,20 @@ class HsCheckoutController extends BaseController
         }
     
         return $string;
+    }
+
+    protected function sendMail($pingbackData)
+    {
+        $orderId = $pingbackData['payment_order']['merchant_order_id'];
+
+        $order = $this->homestayOrderRepo->find($orderId);
+         
+        return Mail::to($order['customer_email'])->send(new MailOrder($order));
+   
+        // if (Mail::failures()) {
+        //      return response()->Fail('Sorry! Please try again latter');
+        // }else{
+        //      return response()->success('Great! Successfully send in your mail');
+        // }
     }
 }
