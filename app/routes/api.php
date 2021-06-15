@@ -82,6 +82,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('customer-by-host', [HsOrderController::class, 'getCustomerByHost']);
         Route::get('order-host', [HsOrderController::class, 'getOrderByHost']);
         Route::put('homestay-order/{id}', [HsOrderController::class, 'update']);
+        Route::post('homestay-approve-request', [HomestayController::class, 'requestApprove']);
 
     });
     
@@ -117,6 +118,7 @@ Route::prefix('pub')->group(function () {
 
     Route::get('homestay-utility-type-parents', [HomestayUtilityController::class, 'getParents']);
     Route::post('sort-hs', [HSPriceController::class, 'sortByPrice']);
+    // Route::post('sort-hs', [HomestayController::class, 'sortByPrice']);
     Route::post('filter-hs-type', [HomestayController::class, 'filterHsType']);
     Route::post('filter-hs-util', [HSUtilityController::class, 'filterUtil']);
     Route::get('homestay', [HomestayController::class, 'index']);

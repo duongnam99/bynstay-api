@@ -9,7 +9,7 @@ class Homestay extends Model
 {
     use HasFactory;
     protected $table = 'homestays';
-    protected $fillable = ['name', 'location', 'location_id', 'des', 'type_id', 'approved', 'user_id', 'created_at', 'updated_at'];
+    protected $fillable = ['name', 'location', 'location_id', 'des', 'type_id', 'approved', 'request_approve_at', 'user_id', 'created_at', 'updated_at'];
 
     public function location()
     {
@@ -25,4 +25,20 @@ class Homestay extends Model
     {
         return $this->belongsToMany(HomestayPolicyType::class, 'homestay_policies', 'homestay_id', 'policy_id');
     }
+
+    public function images()
+    {
+        return $this->hasMany(HomestayImage::class, 'homestay_id');
+    }
+
+    public function prices()
+    {
+        return $this->hasOne(HomestayPrice::class, 'homestay_id');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(HomestayType::class, 'type_id');
+    }
+
 }

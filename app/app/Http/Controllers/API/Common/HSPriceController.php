@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Common;
 
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\HomestayPriceResource;
+use App\Models\Homestay;
 use App\Repositories\HomestayPrice\HomestayPriceRepositoryInterface;
 use App\Validators\InputValidator;
 use Illuminate\Http\Request;
@@ -166,7 +167,8 @@ class HSPriceController extends BaseController
             } else {
                 $type = 'asc';
             }
-            $result = $this->homestayPriceRepo->findAndSort($request->ids, $type);
+            $result = Homestay::whereIn('homestays.id', $request->ids)->join('homestay_prices', 'homestay_prices.homestay_id', '=', 'homestays.id')->with(['images', 'utilities', 'type', 'prices'])->selectRaw('homestays.*')->orderBy('price_normal', $type)->get();
+            // $result = $this->homestayPriceRepo->findAndSort($request->ids, $type);
 
             return response()->json([
                 'ids' => $result->pluck('id'),

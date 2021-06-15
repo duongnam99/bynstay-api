@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Customer;
 
 use App\Http\Controllers\API\BaseController;
 use App\Http\Controllers\Controller;
+use App\Models\Homestay;
 use App\Repositories\WishList\WishListRepositoryInterface;
 use App\Validators\InputValidator;
 use Illuminate\Http\Request;
@@ -54,6 +55,11 @@ class WishListController extends BaseController
         }
         
         if (!$this->wishListRepo->isExist($request->user()->id, $request->homestay_id)) {
+            
+            $homestay = Homestay::find($request->homestay_id);
+            $homestay->wished += 1;
+            $homestay->save();
+
             $data = $this->wishListRepo->create([
                 'user_id' => $request->user()->id,
                 'homestay_id' => $request->homestay_id

@@ -11,6 +11,7 @@ use App\Repositories\Location\LocationRepositoryInterface;
 use App\Validators\InputValidator;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class HomestayController extends AdminBaseController
@@ -170,15 +171,34 @@ class HomestayController extends AdminBaseController
     {
         if ($request->has('id')) {
             $id = $request->get('id');
-            if (strpos($id, '_') !== false) {
-                $id = explode('_', $id)[1];
-
+            if ($request->get('type') == 'district') {
                 $locations = $this->locationRepo->findManyBy('district_id', $id);
             } else {
                 $locations = $this->locationRepo->findManyBy('province_id', $id);
             }
             
             $hs = $this->homestayRepo->findByLocation($locations->pluck('id'));
+
+            return response()->json([
+                'ids' => $hs->pluck('id'),
+                'hs' => $hs
+            ]);
+        }
+        return response()->json(['status' => false]);
+    }
+
+    public function getByPlaceSortPrice(Request $request)
+    {
+        if ($request->has('id')) {
+            $id = $request->get('id');
+            if ($request->get('type') == 'district') {
+                $locations = $this->locationRepo->findManyBy('district_id', $id);
+            } else {
+                $locations = $this->locationRepo->findManyBy('province_id', $id);
+            }
+            
+            $hs = $this->homestayRepo->findByLocation($locations->pluck('id'));
+
             return response()->json([
                 'ids' => $hs->pluck('id'),
                 'hs' => $hs
@@ -190,6 +210,7 @@ class HomestayController extends AdminBaseController
     public function filterHsType(Request $request)
     {
         if ($request->has('ids')) {
+            // $hs = Homestay::whereIn('homestays.id', $request->ids)->join('homestay_prices', 'homestay_prices.homestay_id', '=', 'homestays.id')->with(['images', 'utilities', 'type', 'prices'])->selectRaw('homestays.*')->orderBy('price_normal', $type)->get();
             
             $hs = $this->homestayRepo->filterHsType($request->ids, $request->type);
             return response()->json([
@@ -198,5 +219,17 @@ class HomestayController extends AdminBaseController
             ]);
         }
         return response()->json(['status' => false]);
+    }
+
+    public function requestApprove(Request $request)
+    {
+        $result = $this->homestayRepo->update($request->homestay_id, [
+            'approved' => 2,
+            'request_approve_at' => Carbon::now()
+        ]);
+        return response()->json([
+            'result' => $result,
+        ]);
+        
     }
 }

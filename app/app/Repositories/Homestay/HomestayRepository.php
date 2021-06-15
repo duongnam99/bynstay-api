@@ -24,7 +24,7 @@ class HomestayRepository extends BaseRepository implements HomestayRepositoryInt
 
     public function findByLocation($location)
     {
-        return $this->model->whereIn('location_id', $location)->get();
+        return $this->model->whereIn('location_id', $location)->with(['images', 'prices', 'utilities', 'type'])->get();
     }
 
     public function filterHsType($ids, $type)
