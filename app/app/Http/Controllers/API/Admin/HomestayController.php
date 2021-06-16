@@ -187,26 +187,6 @@ class HomestayController extends AdminBaseController
         return response()->json(['status' => false]);
     }
 
-    public function getByPlaceSortPrice(Request $request)
-    {
-        if ($request->has('id')) {
-            $id = $request->get('id');
-            if ($request->get('type') == 'district') {
-                $locations = $this->locationRepo->findManyBy('district_id', $id);
-            } else {
-                $locations = $this->locationRepo->findManyBy('province_id', $id);
-            }
-            
-            $hs = $this->homestayRepo->findByLocation($locations->pluck('id'));
-
-            return response()->json([
-                'ids' => $hs->pluck('id'),
-                'hs' => $hs
-            ]);
-        }
-        return response()->json(['status' => false]);
-    }
-
     public function filterHsType(Request $request)
     {
         if ($request->has('ids')) {
@@ -219,6 +199,50 @@ class HomestayController extends AdminBaseController
             ]);
         }
         return response()->json(['status' => false]);
+    }
+
+    public function searchFilterSort(Request $request)
+    {
+        if (!$request->has('ids')) {
+            return response()->json(['status' => false]);
+        }
+        
+        $sortType = "";
+        if ($request->sort_type == "1") {
+            $sortType = 'desc';
+        } else if ($request->sort_type == "2"){
+            $sortType = 'asc';
+        }
+
+        $basic = Homestay::whereIn('homestays.id', $request->ids)
+        ->with(['images', 'utilities', 'type', 'prices']);
+        
+        if (!empty($request->idUtils)) {
+            $basic->join('homestay_utilities', 'homestays.id', '=', 'homestay_utilities.homestay_id')
+            ->join('homestay_utility_types','homestay_utility_types.id', '=','homestay_utilities.utility_id')
+            ->whereIn('homestay_utility_types.id', $request->idUtils);
+        }
+        
+        if ($request->hs_type != "0") {
+            $basic->where('type_id', (int) $request->hs_type);
+        }
+
+        $hs = $basic->selectRaw('homestays.*')->distinct()->get();
+
+        if (!empty($sortType)) {
+            $hs = $basic->join('homestay_prices', 'homestay_prices.homestay_id', '=', 'homestays.id')
+            ->select('homestay_prices.price_normal as price_normal','homestays.*')
+            ->orderBy('price_normal', $sortType)->get();
+        } else {
+            $hs = $basic->selectRaw('homestays.*')->distinct()->get();
+        }
+
+        return response()->json([
+            'ids' => $hs->pluck('id'),
+            'hs' => $hs
+        ]);
+    
+
     }
 
     public function requestApprove(Request $request)

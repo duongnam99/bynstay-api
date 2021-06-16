@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Common;
 
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\HomestayUtilityResource;
+use App\Models\Homestay;
 use App\Models\HomestayUtility;
 use App\Models\HomestayUtilityType;
 use App\Repositories\HomestayUtility\HomestayUtilityRepositoryInterface;
@@ -158,8 +159,12 @@ class HSUtilityController extends BaseController
 
     public function filterUtil(Request $request)
     {
-        $utilChildIds = HomestayUtilityType::whereIn('parent_id', $request->idUtils)->pluck('id');
-        $result = HomestayUtility::whereIn('homestay_id', $request->ids)->whereIn('utility_id', $utilChildIds)->get();
+
+        $result = Homestay::whereIn('homestays.id', $request->ids)
+        ->join('homestay_utilities', 'homestays.id', '=', 'homestay_utilities.homestay_id')
+        ->join('homestay_utility_types','homestay_utility_types.id', '=','homestay_utilities.utility_id')
+        ->whereIn('homestay_utility_types.id', $request->idUtils)
+        ->with(['images', 'utilities', 'type', 'prices'])->selectRaw('homestays.*')->distinct()->get();
 
         return response()->json([
             'ids' => $result->pluck('id'),

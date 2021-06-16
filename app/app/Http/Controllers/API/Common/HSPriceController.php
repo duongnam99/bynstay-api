@@ -167,8 +167,10 @@ class HSPriceController extends BaseController
             } else {
                 $type = 'asc';
             }
-            $result = Homestay::whereIn('homestays.id', $request->ids)->join('homestay_prices', 'homestay_prices.homestay_id', '=', 'homestays.id')->with(['images', 'utilities', 'type', 'prices'])->selectRaw('homestays.*')->orderBy('price_normal', $type)->get();
-            // $result = $this->homestayPriceRepo->findAndSort($request->ids, $type);
+            $result = Homestay::whereIn('homestays.id', $request->ids)
+            ->join('homestay_prices', 'homestay_prices.homestay_id', '=', 'homestays.id')
+            ->with(['images', 'utilities', 'type', 'prices'])->selectRaw('homestays.*')
+            ->orderBy('price_normal', $type)->get();
 
             return response()->json([
                 'ids' => $result->pluck('id'),
