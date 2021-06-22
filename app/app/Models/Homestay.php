@@ -11,6 +11,10 @@ class Homestay extends Model
     protected $table = 'homestays';
     protected $fillable = ['name', 'location', 'location_id', 'des', 'type_id', 'approved', 'request_approve_at', 'user_id', 'created_at', 'updated_at'];
 
+    const APPROVED = 1;
+    const REQUEST_APPROVE = 2;
+    const DECLINE_APPROVE = -1;
+
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');

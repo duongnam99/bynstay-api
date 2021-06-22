@@ -16,7 +16,6 @@ class User extends Authenticatable
     const HOSTS = 1;
     const ADMIN = 2;
 
-
     /**
      * The attributes that are mass assignable.
      *

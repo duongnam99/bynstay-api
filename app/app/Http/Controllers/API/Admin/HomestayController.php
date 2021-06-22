@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Admin\AdminBaseController;
 use App\Http\Resources\HomestayResource;
 use App\Models\Homestay;
 use App\Models\Location;
+use App\Models\User;
 use App\Repositories\Homestay\HomestayRepositoryInterface;
 use App\Repositories\Location\LocationRepositoryInterface;
 use App\Validators\InputValidator;
@@ -34,10 +35,20 @@ class HomestayController extends AdminBaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $homestay = Homestay::all();
-        return $this->sendResponse(HomestayResource::collection($homestay), true);
+    public function index(Request $request)
+    {  
+        $homestays = Homestay::all();
+
+        if ($request->has('_start')) {
+            $homestay = Homestay::offset($request->_start);
+            if ($request->has('_end')) {
+                $homestay->limit((int) $request->_end - (int) $request->_start); 
+            }
+            return $this->sendResponse(HomestayResource::collection($homestay->get()), true, $homestays->count());
+
+        }
+        
+        return $this->sendResponse(HomestayResource::collection($homestays), true);
     }
 
     /**
@@ -129,6 +140,11 @@ class HomestayController extends AdminBaseController
      */
     public function update(Request $request, $id)
     {
+        if ($request->user()['user_type'] == User::ADMIN) {
+            $homestay = $this->homestayRepo->update($id, $request->all());
+            return $this->sendResponse(new HomestayResource($homestay));
+        }   
+
         $validator = InputValidator::storeHomestayPharse1($request);
 
         if($validator->fails()){
@@ -206,7 +222,7 @@ class HomestayController extends AdminBaseController
         if (!$request->has('ids')) {
             return response()->json(['status' => false]);
         }
-        
+
         $sortType = "";
         if ($request->sort_type == "1") {
             $sortType = 'desc';
@@ -248,7 +264,7 @@ class HomestayController extends AdminBaseController
     public function requestApprove(Request $request)
     {
         $result = $this->homestayRepo->update($request->homestay_id, [
-            'approved' => 2,
+            'approved' => Homestay::REQUEST_APPROVE,
             'request_approve_at' => Carbon::now()
         ]);
         return response()->json([

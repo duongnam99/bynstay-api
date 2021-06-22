@@ -11,6 +11,7 @@ use App\Http\Controllers\API\Admin\HomeStayTypeController;
 use App\Http\Controllers\API\Admin\HomestayPolicyController;
 use App\Http\Controllers\API\Admin\HomestayUtilityController;
 use App\Http\Controllers\API\Admin\HomestayPolicyTypeController;
+use App\Http\Controllers\API\Admin\SuggestPlaceController;
 use App\Http\Controllers\API\Common\HsCheckoutController;
 use App\Http\Controllers\API\Common\HSImageController;
 use App\Http\Controllers\API\Common\HsOrderController;
@@ -42,6 +43,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('admin')->group(function () {
         Route::resource('ad-homestay', HomestayController::class);
         Route::resource('ad-homestay-type', HomeStayTypeController::class);
+        Route::resource('suggest-place', SuggestPlaceController::class);
 
         Route::resource('homestay-utility-type', HomestayUtilityController::class);
 

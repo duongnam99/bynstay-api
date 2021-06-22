@@ -15,12 +15,12 @@ class AdminBaseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function sendResponse($result, $isGetList = false)
+    public function sendResponse($result, $isGetList = false, $count = null)
     {
         if ($isGetList) {
             return response()->json($result, 200)
             ->header('Access-Control-Expose-Headers', 'X-Total-Count')
-            ->header('X-Total-Count', $result->count());
+            ->header('X-Total-Count', empty($count) ? $result->count() : $count);
         }
         return response()->json($result, 200);
         // ->header('Access-Control-Expose-Headers', 'X-Total-Count');
@@ -40,11 +40,9 @@ class AdminBaseController extends Controller
             'message' => $error,
         ];
 
-
         if(!empty($errorMessages)){
             $response['data'] = $errorMessages;
         }
-
 
         return response()->json($response, $code);
     }
