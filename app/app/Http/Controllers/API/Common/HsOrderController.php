@@ -4,11 +4,13 @@ namespace App\Http\Controllers\API\Common;
 
 use App\Http\Controllers\API\BaseController;
 use App\Http\Controllers\Controller;
+use App\Mail\MailOrder;
 use App\Models\Host;
 use App\Repositories\Homestay\HomestayRepositoryInterface;
 use App\Repositories\HomestayOrder\HomestayOrderRepositoryInterface;
 use App\Validators\InputValidator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class HsOrderController extends BaseController
 {
@@ -154,5 +156,15 @@ class HsOrderController extends BaseController
         $orders = $this->homestayOrderRepo->getOrderByCustomer($request->email);
    
         return response()->json($orders);
+    }
+
+    public function resendMailOrder(Request $request)
+    {
+
+        $order = $this->homestayOrderRepo->find($request->orderId);
+         
+        $result =  Mail::to($order['customer_email'])->send(new MailOrder($order));
+
+        return response()->json(['send' => 1]);
     }
 }

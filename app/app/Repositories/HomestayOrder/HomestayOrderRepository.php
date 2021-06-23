@@ -17,7 +17,7 @@ class HomestayOrderRepository extends BaseRepository implements HomestayOrderRep
 
     public function getOrderedTime($hsId)
     {
-        return $this->model->where('end_date', '>', Carbon::now())->where('homestay_id', $hsId)->get();
+        return $this->model->where('end_date', '>', Carbon::now())->where('homestay_id', $hsId)->where('payment_status', HomestayOrder::PAID)->get();
     }
 
     public function getOrderByHomestay($hsIds)
