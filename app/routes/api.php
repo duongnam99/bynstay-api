@@ -126,6 +126,7 @@ Route::prefix('pub')->group(function () {
     Route::post('filter-hs-util', [HSUtilityController::class, 'filterUtil']);
     Route::post('search-filter-hs', [HomestayController::class, 'searchFilterSort']);
     Route::get('homestay', [HomestayController::class, 'index']);
+    Route::post('homestay', [HomestayController::class, 'getByIds']);
 
 
 });

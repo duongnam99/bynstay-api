@@ -272,4 +272,13 @@ class HomestayController extends AdminBaseController
         ]);
         
     }
+
+    public function getByIds(Request $request)
+    {
+        $result = Homestay::whereIn('id', $request->ids)->get();
+        return response()->json([
+            'result' => $result,
+        ]);
+        
+    }
 }
