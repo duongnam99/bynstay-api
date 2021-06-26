@@ -58,7 +58,7 @@ class HsCheckoutController extends BaseController
 
     protected function buildSuccessUrl($hsId, $orderId)
     {
-        return 'http://bynstayapp.azurewebsites.net//home-detail/'.$hsId.'/order/result?order_id='.$orderId;
+        return 'http://bynstayapp.azurewebsites.net/home-detail/'.$hsId.'/order/result?order_id='.$orderId;
     }
 
     public function pingback(Request $request)
