@@ -100,7 +100,6 @@ class HsCheckoutController extends BaseController
         
         $this->processOrder($pingbackData);
         $this->sendMail($pingbackData);
-        exit();
     }
 
     public function processOrder($pingbackData)
@@ -113,7 +112,7 @@ class HsCheckoutController extends BaseController
         ]);
 
         if (!empty($result)) {
-            die('OK');
+            echo('OK');
         }
     }
 
