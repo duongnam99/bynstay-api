@@ -7,6 +7,7 @@ use App\Mail\MailOrder;
 use App\Repositories\HomestayOrder\HomestayOrderRepositoryInterface;
 use FasterPay\Gateway;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
 
 require_once(__DIR__.'/../../../../Libs/Payment/FasterPay/lib/autoload.php');
@@ -57,12 +58,11 @@ class HsCheckoutController extends BaseController
 
     protected function buildSuccessUrl($hsId, $orderId)
     {
-        return 'http://localhost:3000/home-detail/'.$hsId.'/order/result?order_id='.$orderId;
+        return 'http://bynstayapp.azurewebsites.net//home-detail/'.$hsId.'/order/result?order_id='.$orderId;
     }
 
     public function pingback(Request $request)
     {
-        
         return $this->sendMail($request->all());
         $gateway = $this->initGateway();
 
