@@ -63,7 +63,6 @@ class HsCheckoutController extends BaseController
 
     public function pingback(Request $request)
     {
-        return $this->sendMail($request->all());
         $gateway = $this->initGateway();
 
         $signVersion = \FasterPay\Services\Signature::SIGN_VERSION_1;
