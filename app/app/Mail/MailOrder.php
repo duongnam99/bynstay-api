@@ -31,7 +31,7 @@ class MailOrder extends Mailable
     {
         return $this->subject('Bynstay - Đơn đặt chỗ thành công')->view('mails.order', [
             'order' => $this->order,
-            'myOrder' => 'http://localhost:3000/user/my-order'
+            'myOrder' => 'http://bynstayapp.azurewebsites.net/user/my-order'
         ]);
     }
 }
