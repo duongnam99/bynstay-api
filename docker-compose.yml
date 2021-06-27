@@ -28,7 +28,7 @@ services:
     volumes:
       - ./db/dbdata:/var/lib/mysql
       - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
-    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password', '--bind-address = 0.0.0.0']
     environment:
       MYSQL_DATABASE: laravel
       MYSQL_ROOT_PASSWORD: secret
