@@ -74,10 +74,8 @@ class LocationController extends BaseController
             }
 
             $result = array_merge($homestays, $districts, $provinces);
-            // $result = $provines->concat($districts);
 
             return response()->json($result);
-            return response()->json(array_merge($provinces,$districts));
         }
 
         return response()->json(['status' => false]);
