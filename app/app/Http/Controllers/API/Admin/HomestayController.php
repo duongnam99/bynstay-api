@@ -195,7 +195,7 @@ class HomestayController extends AdminBaseController
             
             $hs = $this->homestayRepo->findByLocation($locations->pluck('id'));
             // $ids = $hs->pluck('id');
-            // $total = $hs->count();
+            $total = $hs->count();
 
             if ($request->has('_start')) {
                 $hs = $hs->slice((int) $request->_start, (int) $request->_end - (int) $request->_start)->values();
@@ -204,7 +204,7 @@ class HomestayController extends AdminBaseController
             return response()->json([
                 'ids' => $hs->pluck('id'),
                 'hs' => $hs,
-                'total' => $hs->count()
+                'total' => $total
             ]);
         }
         return response()->json(['status' => false]);
