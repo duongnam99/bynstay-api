@@ -45,4 +45,9 @@ class Homestay extends Model
         return $this->belongsTo(HomestayType::class, 'type_id');
     }
 
+    public function orders()
+    {
+        return $this->hasMany(HomestayOrder::class, 'homestay_id');
+    }
+
 }

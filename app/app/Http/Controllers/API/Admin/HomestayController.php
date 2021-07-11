@@ -196,18 +196,41 @@ class HomestayController extends AdminBaseController
             $hs = $this->homestayRepo->findByLocation($locations->pluck('id'));
             // $ids = $hs->pluck('id');
             $total = $hs->count();
-
+            
+            $result = $this->rankingResult($hs);
             if ($request->has('_start')) {
-                $hs = $hs->slice((int) $request->_start, (int) $request->_end - (int) $request->_start)->values();
+                // $hs = $hs->slice((int) $request->_start, (int) $request->_end - (int) $request->_start)->values();
+                $hs = array_slice($result, (int) $request->_start, (int) $request->_end - (int) $request->_start);
             }
+            // $ids = $hs->pluck('id');
+            $ids = array_column($hs, 'id');
             
             return response()->json([
-                'ids' => $hs->pluck('id'),
+                'ids' => $ids,
                 'hs' => $hs,
                 'total' => $total
             ]);
         }
         return response()->json(['status' => false]);
+    }
+
+    protected function rankingResult($hs)
+    {
+        foreach($hs as $key => $one) {
+            $hs[$key]['count_order'] = $one->orders()->count();
+        }
+
+        $hs = $hs->toArray();
+        // dd($hs);
+
+        usort($hs, function ($a, $b) {
+            if ($a['count_order'] == $b['count_order']) {
+                return 0;
+            }
+            return ($a['count_order'] > $b['count_order']) ? -1 : 1;
+        });
+
+        return $hs;
     }
 
     public function filterHsType(Request $request)
