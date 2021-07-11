@@ -20,6 +20,11 @@ class Homestay extends Model
         return $this->belongsTo(Location::class, 'location_id');
     }
 
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function utilities()
     {
         return $this->belongsToMany(HomestayUtilityType::class, 'homestay_utilities', 'homestay_id', 'utility_id');

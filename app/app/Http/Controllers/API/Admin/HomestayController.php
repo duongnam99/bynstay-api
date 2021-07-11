@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\API\Admin\AdminBaseController;
 use App\Http\Resources\HomestayResource;
+use App\Mail\MailHomestayApprove;
 use App\Models\Homestay;
 use App\Models\Location;
 use App\Models\User;
@@ -13,6 +14,7 @@ use App\Validators\InputValidator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class HomestayController extends AdminBaseController
@@ -141,6 +143,11 @@ class HomestayController extends AdminBaseController
     public function update(Request $request, $id)
     {
         if ($request->user()['user_type'] == User::ADMIN) {
+            $record = $this->homestayRepo->find($id);
+            if ($record->approved == 2 && $request->approved != 2) {
+                $this->sendMail($record, $request->approved);
+            }
+    
             $homestay = $this->homestayRepo->update($id, $request->all());
             return $this->sendResponse(new HomestayResource($homestay));
         }   
@@ -155,6 +162,7 @@ class HomestayController extends AdminBaseController
         if (is_null($record)) {
             return $this->sendError('Record not found.');
         }
+        
 
         $homestay = $this->homestayRepo->update($id, $request->all());
         $location = $this->locationRepo->update($homestay->location_id, $request->all());
@@ -166,6 +174,11 @@ class HomestayController extends AdminBaseController
         return $this->sendResponse(new HomestayResource($record));
     }
 
+    protected function sendMail($homestay, $status)
+    {
+        $email = User::find($homestay->user_id);
+        return Mail::to($email)->send(new MailHomestayApprove($status, $homestay));
+    }
     /**
      * Remove the specified resource from storage.
      *
