@@ -95,6 +95,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('del-wishlist-hs/{id}', [WishListController::class, 'deleteWishHs']);
         Route::get('check-wished/{id}', [WishListController::class, 'checkWished']);
         Route::get('resend-mail-order/{orderId}', [HsOrderController::class, 'resendMailOrder']);
+        Route::post('rating-homestay', [HomestayController::class, 'ratingHomestay']);
     });
 
 });

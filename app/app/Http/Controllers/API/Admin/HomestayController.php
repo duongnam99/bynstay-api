@@ -118,6 +118,7 @@ class HomestayController extends AdminBaseController
         $homestayResult = $this->homestayRepo->find($id);
         $locationResult = $this->locationRepo->find($homestayResult->location_id);
         $homestayResult->location_info = $locationResult;
+        $homestayResult->count_num_vote = count(json_decode($homestayResult->voting, true));
 
         return response()->json($homestayResult);
     }
@@ -323,5 +324,29 @@ class HomestayController extends AdminBaseController
             'result' => $result,
         ]);
         
+    }
+
+    public function ratingHomestay(Request $request)
+    {
+        if (!$request->user()) {
+            return;
+        }
+        $hs = Homestay::find($request->id);
+        // $current = json_decode($hs->voting);
+        if (empty($hs->voting)) {
+            $currentList = [];
+        } else {
+            $currentList = json_decode($hs->voting, true);
+        }
+
+        $currentList[$request->user()->id] = $request->voting;
+        if(count($currentList)) {
+            $hs->average_star = array_sum($currentList)/count($currentList);
+        }
+        $hs->voting = $currentList;
+
+        return response()->json([
+            'result' => $hs->save(),
+        ]);
     }
 }
